@@ -1,7 +1,7 @@
 # One-Way-Street
 Problem of the One Way Street, solved with DP.
 
-Objective:
+Objectives:
 - Get to any location starting from the garage, by using the shortest way possible.
 - Report the total distance
 
