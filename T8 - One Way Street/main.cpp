@@ -5,11 +5,8 @@
 //  Created by Melissa Trevino on 3/16/16.
 //  Copyright © 2016 Melissa Trevino. All rights reserved.
 //
-//  Objective:
-//  - Get to any location starting from the garage, by using the shortest way possible.
-//  - Report the total distance
-//
-//  We decided to use Floyd algorythm to know the shortest way between two locations.
+//  Melissa Treviño         A00816715
+//  María Paula Anastás     A00817285
 
 
 #include <iostream>
@@ -18,17 +15,32 @@
 using namespace std;
 
 // Global variables needed.
-//int iSIZE;
-//
-//void floyd (int iMatrix[])
-//{
-//    for (int iC = 0; iC <)
-//}
+int iMatrix[100][100];      // Adjacency matrix.
+int iSIZE;                  // Size of the matrix.
 
+// Function that returns the minimum between two paths.
+int minimum (int A, int B)
+{
+    return (A < B)? A : B;
+}
+
+
+// Floyd algorithm that constructs the shortest path from an original matrix.
+void floyd()
+{
+    for (int k = 0; k < iSIZE; k++)
+    {
+        for (int i = 0; i < iSIZE; i++)
+        {
+            for (int j = 0; j < iSIZE; j++)
+                iMatrix[i][j] = minimum (iMatrix[i][j], iMatrix[i][k] + iMatrix[k][i]);
+        }
+    }
+}
 
 
 int main() {
-    
+    // Variables used for the input.
     int iLocations, iBCars, iRoads;
     vector <string> vNames;
     string sRoad;
@@ -36,6 +48,7 @@ int main() {
     
     // Number of locations, of broken cars, and roads.
     cin >> iLocations >> iBCars >> iRoads;
+    iSIZE = iLocations;
     
     // iBCars + 1 names of locations
     for (int iName = 0; iName <= iBCars; iName++)
