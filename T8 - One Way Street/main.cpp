@@ -41,10 +41,9 @@ void floyd()
 
 int main() {
     // Variables used for the input.
-    int iLocations, iBCars, iRoads;
+    int iLocations, iBCars, iRoads, iPath, iType;
     vector <string> vNames;
-    string sRoad;
-    char cType;
+    string sRoad, sLoc1, sLoc2;
     
     // Number of locations, of broken cars, and roads.
     cin >> iLocations >> iBCars >> iRoads;
@@ -63,17 +62,11 @@ int main() {
     for (int iRoad = 0; iRoad < iRoads; iRoad++)
     {
         getline(cin, sRoad);
-        if (sRoad.find('<') == true && sRoad.find('>') == true)
-            cType = 'B';    // Bidirectional
-        
-        else if (sRoad.find('>') == true)
-            cType = 'T';    // To
-        
-        else if (sRoad.find('<') == true)
-            cType = 'F';    // From
-        
         
     }
+    
+    // Create the matrix
+    
     
     return 0;
 }
