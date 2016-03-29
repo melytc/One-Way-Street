@@ -40,6 +40,8 @@ void createRoad (string sRoad)
     iRightSide = 0;
     iLeftSide = 0;
     
+    sRoadValue.clear();
+    
     // Cicle for checking the left side of the road input.
     // This will know if the road goes from the right city to the left city.
     while (sRoad[iActual] == '<' || sRoad[iActual] == '-' || sRoad[iActual] == ' ')
@@ -47,11 +49,12 @@ void createRoad (string sRoad)
         if (sRoad[iActual] == '<')
             iLeftSide = 1;
         
+        sRoad[iActual] = ' ';
         iActual++;
     }
     
     // Cicle for checking the path value, eliminating the character that are not numbers.
-    while (sRoad[iActual] != '-' || sRoad[iActual] != ' ')
+    while (sRoad[iActual] != '-' && sRoad[iActual] != ' ')
     {
         sRoadValue += sRoad[iActual];
         iActual++;
@@ -64,6 +67,7 @@ void createRoad (string sRoad)
         if (sRoad[iActual] == '>')
             iRightSide = 1;
         
+        sRoad[iActual] = ' ';
         iActual++;
     }
     
@@ -219,6 +223,7 @@ int main() {
     contruct(iCities);
     
     // Cicle to read roads.
+    cin.ignore();
     for (int iRoad = 0; iRoad < iRoads; iRoad++)
     {
         // Read from input.
@@ -227,23 +232,31 @@ int main() {
         // Extract the name of the first city.
         sCityName1 = sRoadValue;
         iSpace = sCityName1.find(" ");
-        sCityName1.substr(0, iSpace);
-        sRoadValue.substr(iSpace, sRoadValue.length());
+        sCityName1 = sCityName1.substr(0, iSpace);
+        sRoadValue = sRoadValue.substr(iSpace, sRoadValue.length());
+        
         
         // Extract the name of the second city.
         sCityName2 = sRoadValue;
         iSpace = sCityName2.find(" ");
-        sCityName2.substr(iSpace, sCityName2.length());
-        sRoadValue.substr(0, iSpace);
+        while (iSpace == 0)
+        {
+            sCityName2 = sCityName2.substr(iSpace + 1, sCityName2.length());
+            iSpace = sCityName2.find(" ");
+        }
         
+        sRoadValue = sCityName2;
+        sCityName2 = sCityName2.substr(iSpace + 1, sCityName2.length());
+        sRoadValue = sRoadValue.substr(0, iSpace);
+        
+        // Read and add the road to the matrix.
         createRoad(sRoadValue);
         checkCities(false, false, vBrokenCars, iSIZE);
         setRoadValue(-1, -1, vBrokenCars, iSIZE);
     }
     
-    getRoadValue(vBrokenCars, iSIZE, 0);
-    
-    
+    floyd();
+    cout << getRoadValue(vBrokenCars, iSIZE, 0) << endl;
     
     return 0;
 }
