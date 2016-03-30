@@ -29,9 +29,9 @@ int iRoadValue;             // The value of the road.
 string sCityName1;          // Two strings for each road input.
 string sCityName2;
 
-queue <int> qCities;        // Queue with cities.
+queue <int> qBrokenCars;        // Queue with cities.
 vector <int> vTotal;        // Vector with the total road value for each case.
-
+vector <string> vCities;
 
 // Function that creates a road based on the string from the input.
 void createRoad (string sRoad)
@@ -80,7 +80,7 @@ void createRoad (string sRoad)
 }
 
 // Function that checks in the vector of city names, and adds it up if needed.
-void checkCities (bool bCity1, bool bCity2, vector <string> vCities, int iSize)
+void checkCities (bool bCity1, bool bCity2, int &iSize)
 {
     // Cicle that checks if the cities are in the array of names.
     for (int i = 0; i < iSize; i++)
@@ -92,32 +92,15 @@ void checkCities (bool bCity1, bool bCity2, vector <string> vCities, int iSize)
             bCity2 = true;
     }
     
-    // Cicle that, if a name was not found, will add it to the array.
-    for (int i = 0; i < iSize; i++)
-    {
-        if (!bCity1)
-        {
-            if (vCities[i] == " ")
-            {
-                vCities[i] = sCityName1;
-                bCity1 = true;
-            }
-        }
-        
-        if (!bCity2)
-        {
-            if (vCities[i] == " ")
-            {
-                vCities[i] = sCityName2;
-                bCity2 = true;
-            }
-        }
-    }
+    if (!bCity1)
+        vCities.push_back(sCityName1);
+    if (!bCity2)
+        vCities.push_back(sCityName2);
 }
 
 
 // Function that adds the road value to the matrix.
-void setRoadValue (int iCity1, int iCity2, vector <string> vCities, int iSize)
+void setRoadValue (int iCity1, int iCity2, int &iSize)
 {
     // Cicle that gets the position of the city in the array of names.
     for (int i = 0; i < iSize; i++)
@@ -136,19 +119,19 @@ void setRoadValue (int iCity1, int iCity2, vector <string> vCities, int iSize)
             iMatrix[iCity1][iCity2] = iRoadValue;
         
         if (iLeftSide)
-            iMatrix[iCity1][iCity2] = iRoadValue;
+            iMatrix[iCity2][iCity1] = iRoadValue;
     }
 }
 
 // Function that gets the total road value to get to a broken car, passing through the cities.
-int getRoadValue (vector <string> vCities, int iSize, int iRoadValue)
+int getRoadValue (int iSize, int iRoadValue)
 {
     string sBrokenCar;
     int iBCPos;
     
-    while (!qCities.empty())
+    while (!qBrokenCars.empty())
     {
-        iBCPos = qCities.front();
+        iBCPos = qBrokenCars.front();
         for (int i = 0; i < iSize; i++)
         {
             if (vCities[i] == sBrokenCar)
@@ -156,7 +139,7 @@ int getRoadValue (vector <string> vCities, int iSize, int iRoadValue)
         }
         
         iRoadValue += iMatrix[0][iBCPos] + iMatrix[iBCPos][0];
-        qCities.pop();
+        qBrokenCars.pop();
     }
     
     vTotal.push_back(iRoadValue);
@@ -186,16 +169,15 @@ int minimum (int A, int B)
     return (A < B)? A : B;
 }
 
-
 // Floyd algorithm that constructs the shortest path from an original matrix.
-void floyd()
+void floyd(int iCities)
 {
-    for (int k = 0; k < iSIZE; k++)
+    for (int k = 0; k < iCities; k++)
     {
-        for (int i = 0; i < iSIZE; i++)
+        for (int i = 0; i < iCities; i++)
         {
-            for (int j = 0; j < iSIZE; j++)
-                iMatrix[i][j] = minimum (iMatrix[i][j], iMatrix[i][k] + iMatrix[k][i]);
+            for (int j = 0; j < iCities; j++)
+                iMatrix[i][j] = minimum(iMatrix[i][j], iMatrix[i][k] + iMatrix[k][j]);
         }
     }
 }
@@ -205,7 +187,6 @@ int main() {
     
     // Variables used for the input.
     int iCities, iBCars, iRoads, iSpace;
-    vector <string> vBrokenCars;
     
     // Number of cities, of broken cars, and roads.
     cin >> iCities >> iBCars >> iRoads;
@@ -216,7 +197,9 @@ int main() {
     {
         string aux;
         cin >> aux;
-        vBrokenCars.push_back(aux);
+        vCities.push_back(aux);
+        if (iName != 0)
+            qBrokenCars.push(iName);
     }
     
     // Create the matrix of adyacencies.
@@ -235,7 +218,6 @@ int main() {
         sCityName1 = sCityName1.substr(0, iSpace);
         sRoadValue = sRoadValue.substr(iSpace, sRoadValue.length());
         
-        
         // Extract the name of the second city.
         sCityName2 = sRoadValue;
         iSpace = sCityName2.find(" ");
@@ -251,12 +233,12 @@ int main() {
         
         // Read and add the road to the matrix.
         createRoad(sRoadValue);
-        checkCities(false, false, vBrokenCars, iSIZE);
-        setRoadValue(-1, -1, vBrokenCars, iSIZE);
+        checkCities(false, false, iCities);
+        setRoadValue(-1, -1, iCities);
     }
     
-    floyd();
-    cout << getRoadValue(vBrokenCars, iSIZE, 0) << endl;
+    floyd(iCities);
+    cout << getRoadValue(iSIZE, 0) << endl;
     
     return 0;
 }
